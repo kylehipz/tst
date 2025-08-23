@@ -8,12 +8,13 @@ RUN apk add --no-cache \
     postgresql-dev \
     python3-dev
 
-ARG SERVICE_NAME
 
 RUN pip install --upgrade pip && pip install poetry
 
-COPY common /app/common
+ARG SERVICE_NAME
+
 COPY ${SERVICE_NAME}/pyproject.toml poetry.lock* /app/${SERVICE_NAME}/
+COPY common /app/common
 
 WORKDIR /app/${SERVICE_NAME}
 
