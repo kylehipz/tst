@@ -10,99 +10,105 @@ services:
     volumes:
       - ./common:/app/common
       - ./posts:/app/posts
+    environment:
+      POSTGRES_USER: tst-admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: tst-app
+      POSTGRES_HOST: database
+      POSTGRES_PORT: 5432
     ports:
       - 8000:8000
       - 5678:5678
 
-  tst-follow-service:
-    build:
-      context: .
-      dockerfile: dev.Dockerfile
-      args:
-        SERVICE_NAME: follow
-    container_name: tst-follow-service
-    restart: always
-    volumes:
-      - ./common:/app/common
-      - ./follow:/app/follow
-    ports:
-      - 8001:8000
-      - 5679:5678
-
-  tst-timeline-service:
-    build:
-      context: .
-      dockerfile: dev.Dockerfile
-      args:
-        SERVICE_NAME: timeline
-    container_name: tst-timeline-service
-    restart: always
-    volumes:
-      - ./common:/app/common
-      - ./timeline:/app/timeline
-    ports:
-      - 8002:8000
-      - 5680:5678
-
-  tst-search-and-discovery-service:
-    build:
-      context: .
-      dockerfile: dev.Dockerfile
-      args:
-        SERVICE_NAME: timeline
-    container_name: tst-search-and-discovery-service
-    restart: always
-    volumes:
-      - ./common:/app/common
-      - ./search-and-discovery:/app/search-and-discovery
-    ports:
-      - 8003:8000
-      - 5681:5678
-
-  tst-notifications-service:
-    build:
-      context: .
-      dockerfile: dev.Dockerfile
-      args:
-        SERVICE_NAME: notifications
-    container_name: tst-notifications-service
-    restart: always
-    volumes:
-      - ./common:/app/common
-      - ./notifications:/app/notifications
-    ports:
-      - 8004:8000
-      - 5682:5678
-
-  tst-analytics-service:
-    build:
-      context: .
-      dockerfile: dev.Dockerfile
-      args:
-        SERVICE_NAME: analytics
-    container_name: tst-analytics-service
-    restart: always
-    volumes:
-      - ./common:/app/common
-      - ./analytics:/app/analytics
-    ports:
-      - 8005:8000
-      - 5683:5678
-
-  tst-content-moderation-service:
-    build:
-      context: .
-      dockerfile: dev.Dockerfile
-      args:
-        SERVICE_NAME: content-moderation
-    container_name: tst-content-moderation-service
-    restart: always
-    volumes:
-      - ./common:/app/common
-      - ./content-moderation:/app/content-moderation
-    ports:
-      - 8006:8000
-      - 5684:5678
+  # tst-follow-service:
+  #   build:
+  #     context: .
+  #     dockerfile: dev.Dockerfile
+  #     args:
+  #       SERVICE_NAME: follow
+  #   container_name: tst-follow-service
+  #   restart: always
+  #   volumes:
+  #     - ./common:/app/common
+  #     - ./follow:/app/follow
+  #   ports:
+  #     - 8001:8000
+  #     - 5679:5678
+  #
+  # tst-timeline-service:
+  #   build:
+  #     context: .
+  #     dockerfile: dev.Dockerfile
+  #     args:
+  #       SERVICE_NAME: timeline
+  #   container_name: tst-timeline-service
+  #   restart: always
+  #   volumes:
+  #     - ./common:/app/common
+  #     - ./timeline:/app/timeline
+  #   ports:
+  #     - 8002:8000
+  #     - 5680:5678
+  #
+  # tst-search-and-discovery-service:
+  #   build:
+  #     context: .
+  #     dockerfile: dev.Dockerfile
+  #     args:
+  #       SERVICE_NAME: timeline
+  #   container_name: tst-search-and-discovery-service
+  #   restart: always
+  #   volumes:
+  #     - ./common:/app/common
+  #     - ./search-and-discovery:/app/search-and-discovery
+  #   ports:
+  #     - 8003:8000
+  #     - 5681:5678
+  #
+  # tst-notifications-service:
+  #   build:
+  #     context: .
+  #     dockerfile: dev.Dockerfile
+  #     args:
+  #       SERVICE_NAME: notifications
+  #   container_name: tst-notifications-service
+  #   restart: always
+  #   volumes:
+  #     - ./common:/app/common
+  #     - ./notifications:/app/notifications
+  #   ports:
+  #     - 8004:8000
+  #     - 5682:5678
+  #
+  # tst-analytics-service:
+  #   build:
+  #     context: .
+  #     dockerfile: dev.Dockerfile
+  #     args:
+  #       SERVICE_NAME: analytics
+  #   container_name: tst-analytics-service
+  #   restart: always
+  #   volumes:
+  #     - ./common:/app/common
+  #     - ./analytics:/app/analytics
+  #   ports:
+  #     - 8005:8000
+  #     - 5683:5678
+  #
+  # tst-content-moderation-service:
+  #   build:
+  #     context: .
+  #     dockerfile: dev.Dockerfile
+  #     args:
+  #       SERVICE_NAME: content-moderation
+  #   container_name: tst-content-moderation-service
+  #   restart: always
+  #   volumes:
+  #     - ./common:/app/common
+  #     - ./content-moderation:/app/content-moderation
+  #   ports:
+  #     - 8006:8000
+  #     - 5684:5678
 
   database:
     image: postgres:17.5-alpine
@@ -110,11 +116,11 @@ services:
     ports:
       - 5433:5432
     environment:
-      POSTGRES_USER: todolist-admin
+      POSTGRES_USER: tst-admin
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: todolist-app
+      POSTGRES_DB: tst-app
     volumes:
-      - todolist-vol:/var/lib/postgresql/data
+      - tst-vol:/var/lib/postgresql/data
 
   adminer:
     image: adminer
@@ -122,4 +128,4 @@ services:
       - 8081:8080
 
 volumes:
-  todolist-vol: {}
+  tst-vol: {}
