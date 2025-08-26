@@ -3,6 +3,7 @@ from common.database.connection import SessionDep, create_db_and_tables
 from common.database.models import Follow
 from pydantic import BaseModel
 from sqlalchemy.exc import SQLAlchemyError
+from sqlmodel import select
 
 
 class FollowPayload(BaseModel):
@@ -38,17 +39,22 @@ async def follow_user(payload: FollowPayload, session: SessionDep):
         raise HTTPException(500, e._message())
 
 
-@app.delete("/unfollow")
+@app.delete("/unfollow", status_code=204)
 async def unfollow_user(payload: UnfollowPayload, session: SessionDep):
-    follow_rel = session.get(Follow, **payload.model_dump())
-
-    if not follow_rel:
+    stmt = select(Follow).where(
+        Follow.follower == payload.follower,
+        Follow.followee == payload.followee,
+    )
+    results = session.exec(stmt).all()
+    if not results:
         raise HTTPException(
             404,
             f"User {payload.follower} doesn't follow user {payload.followee}",
         )
 
-    session.delete(payload)
+    follow_rel = results[0]
+
+    session.delete(follow_rel)
     session.commit()
 
     return None
