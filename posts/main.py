@@ -1,5 +1,7 @@
 from fastapi import FastAPI
-from common.database.connection import create_db_and_tables
+from common.database.connection import SessionDep, create_db_and_tables
+from common.database.models import Post
+from sqlalchemy.exc import SQLAlchemyError
 
 
 app = FastAPI()
@@ -11,6 +13,14 @@ def on_startup():
     create_db_and_tables()
 
 
-@app.get("/")
-async def main_route():
-    return {"message": "Hello world!"}
+@app.post("/posts", status_code=201)
+async def create_post(post: Post, session: SessionDep):
+    try:
+        session.add(post)
+        session.commit()
+        session.refresh(post)
+    except SQLAlchemyError as e:
+        session.rollback()
+        print(f"Commit failed: {e}")
+
+    return post
