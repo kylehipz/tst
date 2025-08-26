@@ -1,26 +1,61 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from common.database.connection import SessionDep, create_db_and_tables
 from common.database.models import Post
+from pydantic import BaseModel
 from sqlalchemy.exc import SQLAlchemyError
+from sqlmodel import Field
+from sqlmodel.main import uuid
 
 
 app = FastAPI()
 
 
+class CreatePostPayload(BaseModel):
+    author: str = Field(index=True, nullable=False)
+    content: str
+
+
+class EditPostPayload(BaseModel):
+    content: str
+
+
 @app.on_event("startup")
 def on_startup():
-    print("HELLO")
     create_db_and_tables()
 
 
 @app.post("/posts", status_code=201)
-async def create_post(post: Post, session: SessionDep):
+async def create_post(payload: CreatePostPayload, session: SessionDep):
     try:
+        post = Post(**payload.model_dump())
         session.add(post)
         session.commit()
         session.refresh(post)
+
+        return post
     except SQLAlchemyError as e:
         session.rollback()
-        print(f"Commit failed: {e}")
 
-    return post
+        raise HTTPException(500, e._message())
+
+
+@app.patch("/posts/{id}", status_code=200)
+async def update_post(
+    id: uuid.UUID, payload: EditPostPayload, session: SessionDep
+):
+    try:
+        existing_post = session.get(Post, id)
+        if not existing_post:
+            raise HTTPException(404, "Post not found")
+
+        for key, value in payload.model_dump(exclude_unset=True).items():
+            setattr(existing_post, key, value)
+
+        session.add(existing_post)
+        session.commit()
+        session.refresh(existing_post)
+
+        return existing_post
+    except SQLAlchemyError as e:
+        session.rollback()
+        raise HTTPException(500, e._message())
