@@ -59,3 +59,15 @@ async def update_post(
     except SQLAlchemyError as e:
         session.rollback()
         raise HTTPException(500, e._message())
+
+
+@app.delete("/posts/{id}", status_code=204)
+async def delete_post(id: uuid.UUID, session: SessionDep):
+    existing_post = session.get(Post, id)
+    if not existing_post:
+        raise HTTPException(404, "Post not found")
+
+    session.delete(existing_post)
+    session.commit()
+
+    return None
