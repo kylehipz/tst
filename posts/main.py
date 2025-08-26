@@ -10,6 +10,7 @@ from sqlmodel.main import uuid
 app = FastAPI()
 
 
+# refactor: Move to another file
 class CreatePostPayload(BaseModel):
     author: str = Field(index=True, nullable=False)
     content: str
@@ -19,11 +20,13 @@ class EditPostPayload(BaseModel):
     content: str
 
 
+# refactor: handle deprecation
 @app.on_event("startup")
 def on_startup():
     create_db_and_tables()
 
 
+# refactor: create post logic
 @app.post("/posts", status_code=201)
 async def create_post(payload: CreatePostPayload, session: SessionDep):
     try:
@@ -39,6 +42,7 @@ async def create_post(payload: CreatePostPayload, session: SessionDep):
         raise HTTPException(500, e._message())
 
 
+# refactor: update post logic
 @app.patch("/posts/{id}", status_code=200)
 async def update_post(
     id: uuid.UUID, payload: EditPostPayload, session: SessionDep
@@ -61,6 +65,7 @@ async def update_post(
         raise HTTPException(500, e._message())
 
 
+# refactor: delete post logic
 @app.delete("/posts/{id}", status_code=204)
 async def delete_post(id: uuid.UUID, session: SessionDep):
     existing_post = session.get(Post, id)
