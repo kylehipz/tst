@@ -4,19 +4,28 @@ from common.database.models import Follow
 from pydantic import BaseModel
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import select
+from sqlmodel.main import uuid
+
+# INSERT INTO "user" ("id", "full_name", "email", "username")
+# VALUES ('62b5e47a-ddc8-4243-9c38-9b467ff37728', 'Kyle Hipolito', 'kylehipolito2109@gmail.com', 'kylehipz'),
+# ('c8875fc9-0dd8-494a-9f2c-bf798908be50', 'Myris Patosa', 'patosamyris@gmail.com', 'enmy')
 
 
 class FollowPayload(BaseModel):
-    follower: str
-    followee: str
+    follower_id: uuid.UUID
+    followee_id: uuid.UUID
 
 
 class UnfollowPayload(BaseModel):
-    follower: str
-    followee: str
+    follower_id: uuid.UUID
+    followee_id: uuid.UUID
 
 
-app = FastAPI()
+app = FastAPI(
+    title="Follow Service",
+    description="APIs that the Follow Service support",
+    version="0.0.1",
+)
 
 
 @app.on_event("startup")
@@ -42,8 +51,8 @@ async def follow_user(payload: FollowPayload, session: SessionDep):
 @app.delete("/unfollow", status_code=204)
 async def unfollow_user(payload: UnfollowPayload, session: SessionDep):
     stmt = select(Follow).where(
-        Follow.follower == payload.follower,
-        Follow.followee == payload.followee,
+        Follow.follower_id == payload.follower_id,
+        Follow.followee_id == payload.followee_id,
     )
     results = session.exec(stmt).all()
     if not results:

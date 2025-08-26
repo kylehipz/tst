@@ -7,12 +7,16 @@ from sqlmodel import Field
 from sqlmodel.main import uuid
 
 
-app = FastAPI()
+app = FastAPI(
+    title="Posts Service",
+    description="APIs that the Posts Service support",
+    version="0.0.1",
+)
 
 
 # refactor: Move to another file
 class CreatePostPayload(BaseModel):
-    author: str = Field(index=True, nullable=False)
+    author_id: uuid.UUID
     content: str
 
 
