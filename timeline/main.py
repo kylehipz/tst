@@ -29,6 +29,7 @@ class PostWithAuthor(BaseModel):
     profile_picture: Optional[str] = None
 
 
+# refactor: use user id from headers
 @app.get("/timeline/{user_id}")
 async def get_timeline(user_id: uuid.UUID, session: SessionDep):
     stmt = text(
