@@ -1,5 +1,5 @@
 from typing import List
-from sqlmodel import Field, SQLModel, Relationship
+from sqlmodel import Field, SQLModel, Relationship, UniqueConstraint
 from sqlmodel.main import uuid
 from datetime import datetime
 
@@ -26,3 +26,7 @@ class Follow(SQLModel, table=True):
     follower: str = Field(index=True, nullable=False)
     followee: str = Field(index=True, nullable=False)
     created_at: datetime = Field(default_factory=datetime.now)
+
+    __table_args__ = (
+        UniqueConstraint("follower", "followee", name="uix_follower_followee"),
+    )

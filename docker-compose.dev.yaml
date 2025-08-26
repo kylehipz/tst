@@ -20,20 +20,26 @@ services:
       - 8000:8000
       - 5678:5678
 
-  # tst-follow-service:
-  #   build:
-  #     context: .
-  #     dockerfile: dev.Dockerfile
-  #     args:
-  #       SERVICE_NAME: follow
-  #   container_name: tst-follow-service
-  #   restart: always
-  #   volumes:
-  #     - ./common:/app/common
-  #     - ./follow:/app/follow
-  #   ports:
-  #     - 8001:8000
-  #     - 5679:5678
+  tst-follow-service:
+    build:
+      context: .
+      dockerfile: dev.Dockerfile
+      args:
+        SERVICE_NAME: follow
+    container_name: tst-follow-service
+    restart: always
+    environment:
+      POSTGRES_USER: tst-admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: tst-app
+      POSTGRES_HOST: database
+      POSTGRES_PORT: 5432
+    volumes:
+      - ./common:/app/common
+      - ./follow:/app/follow
+    ports:
+      - 8001:8000
+      - 5679:5678
   #
   # tst-timeline-service:
   #   build:
